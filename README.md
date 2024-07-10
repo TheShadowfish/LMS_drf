@@ -1,4 +1,4 @@
-#Entry points:
+# Entry points:
 
 **Courses**:
 http://localhost:8000/courses/
