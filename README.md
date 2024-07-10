@@ -1,4 +1,4 @@
-#Entry points:
+# Entry points:
 
 **Courses**:
 http://localhost:8000/courses/
@@ -21,13 +21,32 @@ list: http://localhost:8000/users/
 
 retrieve_update: http://localhost:8000/users/<int:pk>/retrieve_update/
 
+**payments**
 
+list: http://localhost:8000/payments/
 
-# Задание 1
+retrieve: http://localhost:8000/payments/<int:pk>/
+
+create: http://localhost:8000/payments/create/
+
+update: http://localhost:8000/payments/<int:pk>/update/
+
+delete: http://localhost:8000/payments/<int:pk>/delete/
+
+# Загрузка данных
+
+Фикстуры с данными в папке **data**, порядок загрузки
+
+1) python3 manage.py loaddata data/courses.json
+2) python3 manage.py loaddata data/users.json
+
+=========================================================
+
+# Задание 1 (+)
 Для модели курса добавьте в сериализатор поле вывода количества уроков. Поле реализуйте с помощью 
 SerializerMethodField()
 
-# Задание 2
+# Задание 2 (+)
 Добавьте новую модель в приложение users:
 
 **Платежи**

@@ -1,12 +1,14 @@
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, DestroyAPIView, ListAPIView
+from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, DestroyAPIView, ListAPIView, RetrieveAPIView, \
+    UpdateAPIView
 
-from users.models import User
-from users.serializers import UserSerializer
+from users.models import User, Payments
+from users.serializers import UserSerializer, PaymentsSerializer
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 # как создать пользователя через Postman чтобы пароль зашифровался как при обычном создании пользователя?
 # интересно конечно, хотя домашку примут и без этого.
@@ -24,4 +26,31 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
+# payments
+
+
+class PaymentsListAPIView(ListAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsRetrieveAPIView(RetrieveAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsUpdateAPIView(UpdateAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsCreateAPIView(CreateAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsDestroyAPIView(DestroyAPIView):
+    queryset = Payments.objects.all()
+
 
