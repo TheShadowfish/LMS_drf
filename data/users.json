@@ -1,0 +1,42 @@
+[
+  {
+    "model": "users.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$720000$1w0izOMyWpOylxSt0LhqVv$eFxxTE3rnFY4FI3K1mYoQl0PX8Sd/hcK4MRRtenq/6E=",
+      "last_login": null,
+      "is_superuser": true,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": true,
+      "is_active": true,
+      "date_joined": "2024-07-10T08:16:41.046Z",
+      "email": "sky@pro.com",
+      "phone": "89998887766",
+      "city": "default city",
+      "avatar": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "users.user",
+    "pk": 2,
+    "fields": {
+      "password": "frog",
+      "last_login": null,
+      "is_superuser": false,
+      "first_name": "",
+      "last_name": "",
+      "is_staff": false,
+      "is_active": true,
+      "date_joined": "2024-07-10T08:26:10.868Z",
+      "email": "user@sky.pro",
+      "phone": "89998887766",
+      "city": "default city",
+      "avatar": "",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
