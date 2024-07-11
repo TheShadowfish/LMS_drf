@@ -3,6 +3,8 @@ from django.contrib.auth.hashers import make_password
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
+from courses.models import Course, Lesson
+
 NULLABLE = {"blank": True, "null": True}
 
 
@@ -69,3 +71,46 @@ class User(AbstractUser):
 
     def __str__(self):
         return f"{self.name} ({self.email})"
+
+
+class Payments(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+
+    date_of_payment = models.DateTimeField(
+        auto_now_add=False,
+        **NULLABLE,
+        verbose_name="Дата оплаты",
+        help_text="Укажите дату оплаты",
+    )
+
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, **NULLABLE, related_name="course"
+    )
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, **NULLABLE, related_name="lesson"
+    )
+
+    payment_amount = models.IntegerField(verbose_name="введите сумму оплаты")
+
+    payment_method_is_cash = models.BooleanField(
+        verbose_name="способ оплаты - наличные",
+        help_text="Укажите признак оплаты наличными",
+    )
+
+    # CASH = 'cash'
+    # NON_CASH = 'ncsh'
+    #
+    # PAYMENT_METHODS = (
+    #     (None, 'Выберите тип оплаты'),
+    #     (CASH, 'Наличные'),
+    #     (NON_CASH, 'Безналичный рассчет')
+    # )
+    # payment_method = models.CharField(max_length=4, choices=PAYMENT_METHODS, **NULLABLE, verbose_name='способ оплаты',
+    #                                   help_text='Укажите способ оплаты')
+
+    class Meta:
+        verbose_name = "платеж"
+        verbose_name_plural = "платежи"
+
+    def __str__(self):
+        return f"{self.user} ({self.course if self.course else self.lesson} - {self.payment_amount})"

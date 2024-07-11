@@ -1,12 +1,22 @@
-from rest_framework.generics import RetrieveUpdateAPIView, CreateAPIView, DestroyAPIView, ListAPIView
+from django_filters.rest_framework import DjangoFilterBackend
+from rest_framework.filters import OrderingFilter
+from rest_framework.generics import (
+    RetrieveUpdateAPIView,
+    CreateAPIView,
+    DestroyAPIView,
+    ListAPIView,
+    RetrieveAPIView,
+    UpdateAPIView,
+)
 
-from users.models import User
-from users.serializers import UserSerializer
+from users.models import User, Payments
+from users.serializers import UserSerializer, PaymentsSerializer
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
+
 
 # как создать пользователя через Postman чтобы пароль зашифровался как при обычном создании пользователя?
 # интересно конечно, хотя домашку примут и без этого.
@@ -21,7 +31,46 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 #     queryset = User.objects.all()
 #     serializer_class = UserSerializer
 
+
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
+
+# payments
+
+
+class PaymentsListAPIView(ListAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+    """
+    Настроить фильтрацию для эндпоинта вывода списка платежей с возможностями:
+
+    - менять порядок сортировки по дате оплаты,
+    - фильтровать по курсу или уроку,
+    - фильтровать по способу оплаты.
+    """
+
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    filterset_fields = ("course", "lesson", "payment_method_is_cash")
+    ordering_fields = ("date_of_payment",)
+
+
+class PaymentsRetrieveAPIView(RetrieveAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsUpdateAPIView(UpdateAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsCreateAPIView(CreateAPIView):
+    queryset = Payments.objects.all()
+    serializer_class = PaymentsSerializer
+
+
+class PaymentsDestroyAPIView(DestroyAPIView):
+    queryset = Payments.objects.all()
