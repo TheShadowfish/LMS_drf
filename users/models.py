@@ -73,33 +73,29 @@ class User(AbstractUser):
         return f"{self.name} ({self.email})"
 
 
-"""
-**Платежи**
-
-- пользователь,
-- дата оплаты,
-- оплаченный курс или урок,
-- сумма оплаты,
-- способ оплаты: наличные или перевод на счет.
-
-Поля 
-**пользователь**, **оплаченный курс и отдельно оплаченный урок**
- должны быть ссылками на соответствующие модели.
-"""
-
-
 class Payments(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='user')
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
 
-    date_of_payment = models.DateTimeField(auto_now_add=False, **NULLABLE, verbose_name="Дата оплаты",
-                                           help_text="Укажите дату оплаты")
+    date_of_payment = models.DateTimeField(
+        auto_now_add=False,
+        **NULLABLE,
+        verbose_name="Дата оплаты",
+        help_text="Укажите дату оплаты",
+    )
 
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, **NULLABLE, related_name='course')
-    lesson = models.ForeignKey(Lesson, on_delete=models.CASCADE, **NULLABLE, related_name='lesson')
+    course = models.ForeignKey(
+        Course, on_delete=models.CASCADE, **NULLABLE, related_name="course"
+    )
+    lesson = models.ForeignKey(
+        Lesson, on_delete=models.CASCADE, **NULLABLE, related_name="lesson"
+    )
 
-    payment_amount = models.IntegerField(verbose_name='введите сумму оплаты')
+    payment_amount = models.IntegerField(verbose_name="введите сумму оплаты")
 
-    payment_method_is_cash = models.BooleanField(verbose_name='способ оплаты - наличные', help_text='Укажите признак оплаты наличными')
+    payment_method_is_cash = models.BooleanField(
+        verbose_name="способ оплаты - наличные",
+        help_text="Укажите признак оплаты наличными",
+    )
 
     # CASH = 'cash'
     # NON_CASH = 'ncsh'
