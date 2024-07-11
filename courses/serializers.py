@@ -3,8 +3,25 @@ from rest_framework.serializers import ModelSerializer
 from courses.models import Course, Lesson
 
 
+class LessonSerializer(ModelSerializer):
+    class Meta:
+        model = Lesson
+        fields = "__all__"
+
+
 class CourseSerializer(ModelSerializer):
     count_lessons = SerializerMethodField()
+    lessons = LessonSerializer(many=True)
+
+    def create(self, validated_data):
+        lessons = validated_data.pop('lessons')
+
+        course_item = Course.objects.create(**validated_data)
+
+        for ls in lessons:
+            Lesson.objects.create(**ls, coutse=course_item)
+
+        return course_item
 
     def get_count_lessons(self, obj):
         return Lesson.objects.filter(course=obj).count()
@@ -12,12 +29,3 @@ class CourseSerializer(ModelSerializer):
     class Meta:
         model = Course
         fields = ('id', 'title', 'preview', 'description', 'count_lessons',)
-
-
-class LessonSerializer(ModelSerializer):
-    class Meta:
-        model = Lesson
-        fields = "__all__"
-
-
-
