@@ -18,9 +18,12 @@ class CourseSerializer(ModelSerializer):
 
         course_item = Course.objects.create(**validated_data)
 
-        for ls in lessons:
-            Lesson.objects.create(**ls, coutse=course_item)
+        lesson_for_create = []
 
+        for ls in lessons:
+            lesson_for_create.append(Lesson(**ls, coutse=course_item))
+
+        Lesson.objects.bulk_create(lesson_for_create)
         return course_item
 
     def get_count_lessons(self, obj):
@@ -28,4 +31,4 @@ class CourseSerializer(ModelSerializer):
 
     class Meta:
         model = Course
-        fields = ('id', 'title', 'preview', 'description', 'count_lessons',)
+        fields = ('id', 'title', 'preview', 'description', 'count_lessons', 'lessons', )
