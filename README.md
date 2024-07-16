@@ -9,7 +9,7 @@ list: http://localhost:8000/courses/lessons/
 
 retrieve: http://localhost:8000/courses/lessons/<int:pk>/
 
-update: http://localhost:8000/courses/lessons/<int:pk>/update/
+* update: http://localhost:8000/courses/lessons/<int:pk>/update/
 
 create: http://localhost:8000/courses/lessons/create/
 

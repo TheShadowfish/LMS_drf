@@ -36,6 +36,7 @@ class CourseSerializer(ModelSerializer):
             "title",
             "preview",
             "description",
+            "owner",
             "count_lessons",
             "lessons",
         )

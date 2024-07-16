@@ -22,6 +22,11 @@ class CourseViewSet(ModelViewSet):
             return CourseCreateSerializer
         return CourseSerializer
 
+    def perform_create(self, serializer):
+        course = serializer.save()
+        course.owner = self.request.user
+        course.save()
+
     def get_permissions(self):
 
         if self.request.user.groups.filter(name="Moderators").exists():
@@ -44,6 +49,11 @@ class LessonCreateAPIView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = (~IsModerator, IsAuthenticated)
+
+    def perform_create(self, serializer):
+        serializer.save(owner=self.request.user)
+        # lesson.owner = self.request.user
+        # lesson.save()
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
