@@ -48,7 +48,7 @@ class LessonListAPIView(ListAPIView):
 class LessonCreateAPIView(CreateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
-    permission_classes = (~IsModerator, IsAuthenticated)
+    permission_classes = (~IsModerator, IsAuthenticated, IsOwner)
 
     def perform_create(self, serializer):
         serializer.save(owner=self.request.user)
@@ -60,10 +60,15 @@ class LessonRetrieveAPIView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
+    permission_classes = (IsModerator | IsOwner, IsAuthenticated)
+
 
 class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
+
+    permission_classes = (IsModerator | IsOwner, IsAuthenticated)
 
 
 class LessonDestroyAPIView(DestroyAPIView):
@@ -75,5 +80,8 @@ class LessonDestroyAPIView(DestroyAPIView):
     # а так - работает на модератора и дает удалять простому пользователю
     def get_permissions(self):
         if self.request.user.groups.filter(name="Moderators").exists():
-                self.permission_classes = (~IsModerator, IsAuthenticated)
+            self.permission_classes = (~IsModerator, IsAuthenticated)
+        else:
+            self.permission_classes = (IsOwner, IsAuthenticated)
+
         return super().get_permissions()
