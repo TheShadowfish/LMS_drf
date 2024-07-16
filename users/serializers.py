@@ -6,7 +6,7 @@ from users.models import User, Payments
 
 
 class UserSerializer(ModelSerializer):
-    payments = SerializerMethodField()
+    payments = SerializerMethodField(read_only=True)
 
     def get_payments(self, obj):
         return [
