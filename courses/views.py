@@ -10,7 +10,7 @@ from rest_framework.generics import (
 
 from courses.models import Course, Lesson
 from courses.serializers import CourseSerializer, LessonSerializer, CourseCreateSerializer
-from users.permissions import IsModerator
+from users.permissions import IsModerator, IsOwner
 
 
 class CourseViewSet(ModelViewSet):
@@ -35,8 +35,8 @@ class CourseViewSet(ModelViewSet):
                 self.permission_classes = (~IsModerator,)
             elif self.action in ["update", "retrieve"]:
                 self.permission_classes = (IsModerator,)
-        # elif self.action != "create":
-        #     self.permission_classes = (IsOwner,)
+        elif self.action != "create":
+             self.permission_classes = (IsOwner,)
         return super().get_permissions()
 
 
