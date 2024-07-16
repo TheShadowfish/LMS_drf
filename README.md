@@ -13,7 +13,7 @@ update: http://localhost:8000/courses/lessons/<int:pk>/update/
 
 create: http://localhost:8000/courses/lessons/create/
 
-delete: http://localhost:8000/courses/lessons/create/<int:pk>/delete/
+delete: http://localhost:8000/courses/lessons/<int:pk>/delete/
 
 **users**
 
@@ -47,7 +47,7 @@ delete: http://localhost:8000/payments/<int:pk>/delete/
 
 Эндпоинты для авторизации и регистрации должны остаться доступны для неавторизованных пользователей.
 
-# Задание 2
+# Задание 2 (+)
 Заведите группу модераторов и опишите для нее права работы с любыми уроками и курсами, но без возможности их удалять и создавать новые. Заложите функционал такой проверки в контроллеры.
 
 # Задание 3

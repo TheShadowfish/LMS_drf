@@ -39,3 +39,9 @@ class CourseSerializer(ModelSerializer):
             "count_lessons",
             "lessons",
         )
+
+class CourseCreateSerializer(ModelSerializer):
+
+    class Meta:
+        model = Course
+        fields = "__all__"
