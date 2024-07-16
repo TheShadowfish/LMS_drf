@@ -18,6 +18,11 @@ class UserSerializer(ModelSerializer):
         model = User
         fields = "__all__"
 
+class LimitedUserSerializer(ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = "__all__"
 
 class PaymentsSerializer(ModelSerializer):
     class Meta:
