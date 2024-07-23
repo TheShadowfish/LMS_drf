@@ -9,12 +9,15 @@ from rest_framework.generics import (
 )
 
 from courses.models import Course, Lesson
+from courses.paginators import CustomPagination, CustomOffsetPagination
 from courses.serializers import CourseSerializer, LessonSerializer, CourseCreateSerializer
 from users.permissions import IsModerator, IsOwner
 
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
+    pagination_class = CustomPagination
+
 
     def perform_create(self, serializer):
         serializer.save(reg_user=self.request.user)
@@ -47,6 +50,7 @@ class CourseViewSet(ModelViewSet):
 class LessonListAPIView(ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    pagination_class = CustomOffsetPagination
 
 
 class LessonCreateAPIView(CreateAPIView):
