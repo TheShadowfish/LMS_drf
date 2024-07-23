@@ -15,6 +15,10 @@ from users.permissions import IsModerator, IsOwner
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
+
+    def perform_create(self, serializer):
+        serializer.save(reg_user=self.request.user)
+
     # serializer_class = CourseSerializer
 
     def get_serializer_class(self):
@@ -60,20 +64,20 @@ class LessonRetrieveAPIView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    permission_classes = (IsAuthenticated, IsModerator | IsOwner, )
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
 
 
 class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    permission_classes = (IsAuthenticated, IsModerator | IsOwner, )
-
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
 
 
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
     # почему-то удалять запрещает всем пользователям - какая-то особенность DRF?
     # permission_classes = (~IsModerator, IsAuthenticated)
 

@@ -11,15 +11,15 @@ from rest_framework.generics import (
 from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework.response import Response
 
-from users.models import User, Payments
+from users.models import User, Payments, Subscriptions
 from users.permissions import IsUserOwner
-from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer
+from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer, SubscriptionsSerializer
 
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
-    ermission_classes = (IsUserOwner, IsAuthenticated)
+    permission_classes = (IsUserOwner, IsAuthenticated)
 
     def get_serializer_class(self):
         if self.request.method == 'GET' and self.get_object() != self.request.user:
@@ -32,8 +32,6 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
         return super().update(request, *args, **kwargs)
 
 
-
-
 class UserListAPIView(ListAPIView):
     queryset = User.objects.all()
     serializer_class = UserSerializer
@@ -44,6 +42,7 @@ class UserDeleteAPIView(DestroyAPIView):
     serializer_class = UserSerializer
     permission_classes = (IsUserOwner,)
 
+
 class UserCreateAPIView(CreateAPIView):
     serializer_class = UserSerializer
     queryset = User.objects.all()
@@ -53,7 +52,6 @@ class UserCreateAPIView(CreateAPIView):
         user = serializer.save(is_active=True)
         user.set_password(user.password)
         user.save()
-
 
 
 # payments
@@ -93,3 +91,17 @@ class PaymentsCreateAPIView(CreateAPIView):
 
 class PaymentsDestroyAPIView(DestroyAPIView):
     queryset = Payments.objects.all()
+
+
+class SubscriptionsCreateAPIView(CreateAPIView):
+    queryset = Subscriptions.objects.all()
+    serializer_class = SubscriptionsSerializer
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+        # lesson.owner = self.request.user
+        # lesson.save()
+
+
+class SubscriptionsDestroyAPIView(DestroyAPIView):
+    queryset = Subscriptions.objects.all()

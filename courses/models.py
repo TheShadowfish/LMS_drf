@@ -29,12 +29,27 @@ class Course(models.Model):
         help_text="Укажите владельца курса"
     )
 
+    created_at = models.DateTimeField(
+        **NULLABLE,
+        verbose_name="Дата создания",
+        help_text="Укажите дату создания",
+        auto_now_add=True,
+    )
+    updated_at = models.DateTimeField(
+        **NULLABLE,
+        verbose_name="Дата изменения",
+        help_text="Укажите дату изменения",
+        auto_now=True,
+    )
+
+
+
     class Meta:
         verbose_name = "Курс"
         verbose_name_plural = "Курсы"
 
     def __str__(self):
-        return self.name
+        return self.title
 
 
 """
@@ -89,4 +104,4 @@ class Lesson(models.Model):
         verbose_name_plural = "Собаки"
 
     def __str__(self):
-        return self.name
+        return self.title
