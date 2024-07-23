@@ -57,16 +57,15 @@ class CourseSerializer(ModelSerializer):
         return Lesson.objects.filter(course=obj).count()
 
     def get_subscriptions(self, obj):
+        user = self.context['request'].user
+        return Subscriptions.objects.all().filter(user=user).filter(course=obj).exists()
 
-        owner = serializers.HiddenField(default=serializers.CurrentUserDefault())
 
-        user_pk = owner.get_value("pk")
-        # return (f"user_pk {user_pk}, owner {owner}, user {CurrentUserDefault}")
+        # return [
+        #     f"{s.course}-(pk={s.course.pk}{bool(s.last_date < s.course.updated_at) * ' Курс обновлен!'}),"
+        #     for s in Subscriptions.objects.all().filter(course=obj).filter(user=user).order_by("last_date")
+        # ]
 
-        return [
-            f"{s.course}-(pk={s.course.pk}{bool(s.last_date < s.course.updated_at) * ' Курс обновлен!'}),"
-            for s in Subscriptions.objects.filter(course=obj).filter(user=CurrentUserDefault).order_by("last_date")
-        ]
 
     class Meta:
         model = Course
