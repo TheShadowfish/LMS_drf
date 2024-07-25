@@ -141,12 +141,12 @@ class LessonsTestCase(APITestCase):
 
     def test_lesson_create(self):
         url = reverse("courses:lessons-create")
-        course_id = self.course.pk
-        print(self.course.pk)
+        # course_id = self.course.pk
+        # print(self.course.pk)
 
         data = {
             "title": "lesson 2",
-            "course": course_id
+            "course": self.course.pk
                 }
 
 
