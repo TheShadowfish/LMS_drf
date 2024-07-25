@@ -9,12 +9,19 @@ from rest_framework.generics import (
 )
 
 from courses.models import Course, Lesson
+from courses.paginators import CustomPagination, CustomOffsetPagination
 from courses.serializers import CourseSerializer, LessonSerializer, CourseCreateSerializer
 from users.permissions import IsModerator, IsOwner
 
 
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
+    pagination_class = CustomPagination
+
+
+    def perform_create(self, serializer):
+        serializer.save(reg_user=self.request.user)
+
     # serializer_class = CourseSerializer
 
     def get_serializer_class(self):
@@ -36,13 +43,14 @@ class CourseViewSet(ModelViewSet):
             elif self.action in ["update", "retrieve"]:
                 self.permission_classes = (IsModerator,)
         elif self.action != "create":
-             self.permission_classes = (IsOwner,)
+            self.permission_classes = (IsOwner,)
         return super().get_permissions()
 
 
 class LessonListAPIView(ListAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+    pagination_class = CustomOffsetPagination
 
 
 class LessonCreateAPIView(CreateAPIView):
@@ -60,20 +68,20 @@ class LessonRetrieveAPIView(RetrieveAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    permission_classes = (IsModerator | IsOwner, IsAuthenticated)
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
 
 
 class LessonUpdateAPIView(UpdateAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-
-    permission_classes = (IsModerator | IsOwner, IsAuthenticated)
+    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
 
 
 class LessonDestroyAPIView(DestroyAPIView):
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
+
     # почему-то удалять запрещает всем пользователям - какая-то особенность DRF?
     # permission_classes = (~IsModerator, IsAuthenticated)
 

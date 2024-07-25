@@ -114,3 +114,27 @@ class Payments(models.Model):
 
     def __str__(self):
         return f"{self.user} ({self.course if self.course else self.lesson} - {self.payment_amount})"
+
+
+"""
+Добавьте модель подписки на обновления курса для пользователя.
+
+Модель подписки должна содержать следующие поля: 
+
+«пользователь» (FK на модель пользователя), «курс» (FK на модель курса). 
+
+Можете дополнительно расширить модель при необходимости.
+"""
+
+
+class Subscriptions(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE, related_name="subscriber")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="subscribed_course")
+    last_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала подписки")
+
+    class Meta:
+        verbose_name = "подписка"
+        verbose_name_plural = "подписки"
+
+    def __str__(self):
+        return f"{self.user} - {self.course}"
