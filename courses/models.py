@@ -74,6 +74,7 @@ class Lesson(models.Model):
         verbose_name="Курс",
         help_text="Введите курс",
         related_name="lessons",
+        **NULLABLE
     )
     description = models.TextField(
         verbose_name="Описание урока", help_text="Введите описание урока", **NULLABLE

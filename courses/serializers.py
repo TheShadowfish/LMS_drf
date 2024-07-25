@@ -15,15 +15,18 @@ class LessonSerializer(ModelSerializer):
         model = Lesson
         fields = "__all__"
 
-    def create(self, validated_data):
-        course = validated_data.pop("course")
-
-        course_item = Course.objects.filter(pk=course)
-        course_item.save()
-
-        lesson_item = Lesson.objects.create(**validated_data)
-
-        return lesson_item
+    # def create(self, validated_data):
+    #
+    #     course_id = validated_data("course")
+    #
+    #     course_item = Course.objects.filter(pk=course_id)
+    #     course_item.save()
+    #
+    #     # validated_data()
+    #
+    #     lesson_item = Lesson.objects.create(**validated_data)
+    #
+    #     return lesson_item
 
 
 class CourseSerializer(ModelSerializer):
