@@ -7,8 +7,8 @@ from users.models import User, Payments, Subscriptions
 
 
 class UserSerializer(ModelSerializer):
-    payments = SerializerMethodField(read_only=True)
-    subscriptions = SerializerMethodField(read_only=True)
+    payments = SerializerMethodField(read_only=True, help_text="Оплаченные уроки и курсы")
+    subscriptions = SerializerMethodField(read_only=True, help_text="Подписки на обновления")
 
     def get_payments(self, obj):
         return [
