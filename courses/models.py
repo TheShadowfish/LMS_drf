@@ -101,8 +101,8 @@ class Lesson(models.Model):
     )
 
     class Meta:
-        verbose_name = "Собака"
-        verbose_name_plural = "Собаки"
+        verbose_name = "урок"
+        verbose_name_plural = "уроки"
 
     def __str__(self):
         return self.title

@@ -74,7 +74,7 @@ class User(AbstractUser):
 
 
 class Payments(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name="user")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь внесший оплату", help_text="Введите пользователя, внесшего оплату", related_name="user")
 
     date_of_payment = models.DateTimeField(
         auto_now_add=False,
@@ -84,13 +84,13 @@ class Payments(models.Model):
     )
 
     course = models.ForeignKey(
-        Course, on_delete=models.CASCADE, **NULLABLE, related_name="course"
+        Course, on_delete=models.CASCADE, **NULLABLE, related_name="course", verbose_name="Оплаченный курс", help_text="Введите оплаченный курс"
     )
     lesson = models.ForeignKey(
-        Lesson, on_delete=models.CASCADE, **NULLABLE, related_name="lesson"
+        Lesson, on_delete=models.CASCADE, **NULLABLE, related_name="lesson", verbose_name="Оплаченный урок", help_text="Введите оплаченный урок"
     )
 
-    payment_amount = models.IntegerField(verbose_name="введите сумму оплаты")
+    payment_amount = models.PositiveIntegerField(verbose_name="введите сумму оплаты", help_text="Введите сумму оплаты")
 
     payment_method_is_cash = models.BooleanField(
         verbose_name="способ оплаты - наличные",
@@ -128,8 +128,8 @@ class Payments(models.Model):
 
 
 class Subscriptions(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE, related_name="subscriber")
-    course = models.ForeignKey(Course, on_delete=models.CASCADE, related_name="subscribed_course")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, **NULLABLE, verbose_name='подписчик', help_text="введите ID подписчика", related_name="subscriber")
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, verbose_name='курс, на который создана подписка', help_text="введите ID курса подписки", related_name="subscribed_course")
     last_date = models.DateTimeField(auto_now_add=True, verbose_name="Дата начала подписки")
 
     class Meta:

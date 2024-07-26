@@ -1,4 +1,6 @@
+from django.utils.decorators import method_decorator
 from django_filters.rest_framework import DjangoFilterBackend
+from drf_yasg.utils import swagger_auto_schema
 from rest_framework.filters import OrderingFilter
 from rest_framework.generics import (
     RetrieveUpdateAPIView,
@@ -15,8 +17,8 @@ from users.models import User, Payments, Subscriptions
 from users.permissions import IsUserOwner
 from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer, SubscriptionsSerializer
 
-
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
+    """Просмотр информации о пользователе, обновление информации пользователя"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsUserOwner, IsAuthenticated)
@@ -33,17 +35,20 @@ class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
 
 
 class UserListAPIView(ListAPIView):
+    """Вывод списка пользователей"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
 
 
 class UserDeleteAPIView(DestroyAPIView):
+    """Удаление пользователя"""
     queryset = User.objects.all()
     serializer_class = UserSerializer
     permission_classes = (IsUserOwner,)
 
 
 class UserCreateAPIView(CreateAPIView):
+    """Создание пользователя"""
     serializer_class = UserSerializer
     queryset = User.objects.all()
     permission_classes = (AllowAny,)
@@ -58,6 +63,7 @@ class UserCreateAPIView(CreateAPIView):
 
 
 class PaymentsListAPIView(ListAPIView):
+    """Список платежей пользователей"""
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
@@ -75,25 +81,30 @@ class PaymentsListAPIView(ListAPIView):
 
 
 class PaymentsRetrieveAPIView(RetrieveAPIView):
+    """Информация об отдельном платеже пользователя"""
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
 
 class PaymentsUpdateAPIView(UpdateAPIView):
+    """Обновление информации об отдельном платеже пользователя"""
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
 
 class PaymentsCreateAPIView(CreateAPIView):
+    """Создание платежа пользователя"""
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
 
 
 class PaymentsDestroyAPIView(DestroyAPIView):
+    """Удаление платежа пользователя"""
     queryset = Payments.objects.all()
 
 
 class SubscriptionsCreateAPIView(CreateAPIView):
+    """Создание подписки на курс"""
     queryset = Subscriptions.objects.all()
     serializer_class = SubscriptionsSerializer
 
@@ -104,4 +115,5 @@ class SubscriptionsCreateAPIView(CreateAPIView):
 
 
 class SubscriptionsDestroyAPIView(DestroyAPIView):
+    """Удаление подписки на курс"""
     queryset = Subscriptions.objects.all()
