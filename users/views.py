@@ -16,6 +16,8 @@ from rest_framework.response import Response
 from users.models import User, Payments, Subscriptions
 from users.permissions import IsUserOwner
 from users.serializers import UserSerializer, PaymentsSerializer, LimitedUserSerializer, SubscriptionsSerializer
+from users.services import create_stripe_price, create_stripe_session
+
 
 class UserRetrieveUpdateAPIView(RetrieveUpdateAPIView):
     """Просмотр информации о пользователе, обновление информации пользователя"""
@@ -92,10 +94,10 @@ class PaymentsUpdateAPIView(UpdateAPIView):
     serializer_class = PaymentsSerializer
 
 
-class PaymentsCreateAPIView(CreateAPIView):
-    """Создание платежа пользователя"""
-    queryset = Payments.objects.all()
-    serializer_class = PaymentsSerializer
+# class PaymentsCreateAPIView(CreateAPIView):
+#     """Создание платежа пользователя"""
+#     queryset = Payments.objects.all()
+#     serializer_class = PaymentsSerializer
 
 
 class PaymentsDestroyAPIView(DestroyAPIView):
@@ -117,3 +119,17 @@ class SubscriptionsCreateAPIView(CreateAPIView):
 class SubscriptionsDestroyAPIView(DestroyAPIView):
     """Удаление подписки на курс"""
     queryset = Subscriptions.objects.all()
+
+
+class PaymentsCreateAPIView(CreateAPIView):
+    serializer_class = PaymentsSerializer
+    queryset = Payments.objects.all()
+
+    def perform_create(self, serializer):
+        payment = serializer.save(user=self.request.user)
+        price = create_stripe_price(payment.payment_amount)
+        session_id, payment_link = create_stripe_session(price)
+
+        payment.session_id = session_id
+        payment.link = payment_link
+        payment.save()

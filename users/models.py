@@ -96,6 +96,13 @@ class Payments(models.Model):
         verbose_name="способ оплаты - наличные",
         help_text="Укажите признак оплаты наличными",
     )
+        # payment_sum = models.PositiveIntegerField(verbose_name='Cумма платежа', help_text="Введите сумму платежа")
+        # method_choices = {"наличными": "наличными", "переводом": "переводом"}
+        # payment_method = models.CharField(max_length=50, choices=method_choices, verbose_name='Способ оплаты')
+
+    session_id = models.CharField(max_length=255, verbose_name='Id сессии', **NULLABLE)
+    link = models.URLField(max_length=400, verbose_name='Cсылка на оплату', **NULLABLE)
+
 
     # CASH = 'cash'
     # NON_CASH = 'ncsh'

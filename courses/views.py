@@ -106,3 +106,4 @@ class LessonDestroyAPIView(DestroyAPIView):
             self.permission_classes = (IsOwner, IsAuthenticated)
 
         return super().get_permissions()
+
