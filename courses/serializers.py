@@ -15,25 +15,25 @@ class LessonSerializer(ModelSerializer):
         model = Lesson
         fields = "__all__"
 
-    # def create(self, validated_data):
-    #
-    #     course_id = validated_data("course")
-    #
-    #     course_item = Course.objects.filter(pk=course_id)
-    #     course_item.save()
-    #
-    #     # validated_data()
-    #
-    #     lesson_item = Lesson.objects.create(**validated_data)
-    #
-    #     return lesson_item
+    def create(self, validated_data):
+
+        lesson_item = Lesson.objects.create(**validated_data)
+
+        # При изменении урока, входящего в курс курс помечается как обновленный
+        # Т.е. при его сохранении ставится текущее время обновления автоматом
+        course_id = lesson_item.course.pk
+        if(course_id):
+            course_item = Course.objects.get(pk=course_id)
+            course_item.save()
+
+        return lesson_item
 
 
 class CourseSerializer(ModelSerializer):
-    count_lessons = SerializerMethodField(read_only=True)
-    lessons = LessonSerializer(many=True, read_only=True)
+    count_lessons = SerializerMethodField(read_only=True, help_text="Число уроков в курсе")
+    lessons = LessonSerializer(many=True, read_only=True, help_text="Уроки, входящие в курс")
 
-    subscriptions = SerializerMethodField(read_only=True)
+    subscriptions = SerializerMethodField(read_only=True, help_text="Подписка текущего пользователя на курс")
 
 
 
@@ -49,12 +49,6 @@ class CourseSerializer(ModelSerializer):
 
         Lesson.objects.bulk_create(lesson_for_create)
         return course_item
-
-
-
-
-
-
 
     def get_count_lessons(self, obj):
         return Lesson.objects.filter(course=obj).count()
