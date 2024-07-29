@@ -74,7 +74,7 @@ class User(AbstractUser):
 
 
 class Payments(models.Model):
-    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь внесший оплату", help_text="Введите пользователя, внесшего оплату", related_name="user")
+    user = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Пользователь внесший оплату", help_text="Введите пользователя, внесшего оплату", related_name="user", **NULLABLE)
 
     date_of_payment = models.DateTimeField(
         auto_now_add=False,

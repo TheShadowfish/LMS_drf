@@ -1,6 +1,9 @@
 import stripe
 from config.settings import STRIPE_API_KEY
 
+
+stripe.api_key = STRIPE_API_KEY
+
 # def convert_rub_to_dollars(amount):
 #     """Конвертирует рубли в доллары"""
 #

@@ -92,6 +92,9 @@ class PaymentsUpdateAPIView(UpdateAPIView):
     """Обновление информации об отдельном платеже пользователя"""
     queryset = Payments.objects.all()
     serializer_class = PaymentsSerializer
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
 
 
 # class PaymentsCreateAPIView(CreateAPIView):
