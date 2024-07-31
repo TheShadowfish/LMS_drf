@@ -6,7 +6,9 @@
       "title": "Python",
       "preview": "",
       "description": "The big OOP Python course",
-      "owner": 4
+      "owner": 4,
+      "created_at": "2024-07-25T00:00:00Z",
+      "updated_at": "2024-07-25T00:00:00Z"
     }
   },
   {
@@ -16,7 +18,9 @@
       "title": "C++",
       "preview": "",
       "description": "Deeper and deeper",
-      "owner": null
+      "owner": null,
+      "created_at": "2024-07-25T00:00:00Z",
+      "updated_at": "2024-07-25T00:00:00Z"
     }
   },
   {
@@ -26,7 +30,9 @@
       "title": "Django",
       "preview": "",
       "description": "Get understanding of django or go postal",
-      "owner": null
+      "owner": null,
+      "created_at": "2024-07-25T00:00:00Z",
+      "updated_at": "2024-07-25T00:00:00Z"
     }
   },
   {
@@ -36,7 +42,9 @@
       "title": "Django Rest Framework",
       "preview": "",
       "description": "Some JSON's, and even more JSON's",
-      "owner": null
+      "owner": null,
+      "created_at": "2024-07-25T00:00:00Z",
+      "updated_at": "2024-07-25T00:00:00Z"
     }
   },
   {
@@ -46,7 +54,9 @@
       "title": "Test course",
       "preview": "",
       "description": "Big test is the best",
-      "owner": 4
+      "owner": 4,
+      "created_at": "2024-07-25T00:00:00Z",
+      "updated_at": "2024-07-25T00:00:00Z"
     }
   },
   {
@@ -115,7 +125,7 @@
     "fields": {
       "title": "list comprehensions",
       "course": 1,
-      "description": "i have for U some special street magic!",
+      "description": "I have for U some special street magic!",
       "preview": "",
       "video_url": null,
       "owner": 4
@@ -155,6 +165,18 @@
       "preview": "",
       "video_url": null,
       "owner": 4
+    }
+  },
+  {
+    "model": "courses.lesson",
+    "pk": 11,
+    "fields": {
+      "title": "lesson 2",
+      "course": 1,
+      "description": null,
+      "preview": "",
+      "video_url": null,
+      "owner": 1
     }
   }
 ]

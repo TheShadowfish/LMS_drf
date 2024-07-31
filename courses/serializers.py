@@ -15,18 +15,18 @@ class LessonSerializer(ModelSerializer):
         model = Lesson
         fields = "__all__"
 
-    def create(self, validated_data):
-
-        lesson_item = Lesson.objects.create(**validated_data)
-
-        # При изменении урока, входящего в курс курс помечается как обновленный
-        # Т.е. при его сохранении ставится текущее время обновления автоматом
-        course_id = lesson_item.course.pk
-        if(course_id):
-            course_item = Course.objects.get(pk=course_id)
-            course_item.save()
-
-        return lesson_item
+    # def create(self, validated_data):
+    #
+    #     lesson_item = Lesson.objects.create(**validated_data)
+    #
+    #     # При изменении урока, входящего в курс курс помечается как обновленный
+    #     # Т.е. при его сохранении ставится текущее время обновления автоматом
+    #     course_id = lesson_item.course.pk
+    #     if(course_id):
+    #         course_item = Course.objects.get(pk=course_id)
+    #         course_item.save()
+    #
+    #     return lesson_item
 
 
 class CourseSerializer(ModelSerializer):

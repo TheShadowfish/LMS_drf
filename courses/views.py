@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+
+import pytz
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
@@ -10,9 +13,11 @@ from rest_framework.generics import (
     DestroyAPIView,
 )
 
+from config import settings
 from courses.models import Course, Lesson
 from courses.paginators import CustomPagination, CustomOffsetPagination
 from courses.serializers import CourseSerializer, LessonSerializer, CourseCreateSerializer
+from courses.tasks import send_information_about_course_update
 from users.permissions import IsModerator, IsOwner
 
 @method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Вывод списка курсов"))
@@ -69,9 +74,21 @@ class LessonCreateAPIView(CreateAPIView):
     permission_classes = (~IsModerator, IsAuthenticated, IsOwner)
 
     def perform_create(self, serializer):
-        serializer.save(owner=self.request.user)
-        # lesson.owner = self.request.user
-        # lesson.save()
+        new_lesson = serializer.save(owner=self.request.user)
+        # new_lesson = serializer.save()
+
+        zone = pytz.timezone(settings.TIME_ZONE)
+        current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
+
+        if new_lesson.course.updated_at < current_datetime_4_hours_ago:
+            print(f"last_upd {new_lesson.course.updated_at}, -4h {current_datetime_4_hours_ago}")
+
+            send_information_about_course_update.delay(new_lesson.course.pk)
+
+        course = Course.objects.get(course=new_lesson.course.pk)
+        print(course)
+        course.save()
+        # course = serializer.save()
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
@@ -88,6 +105,22 @@ class LessonUpdateAPIView(UpdateAPIView):
     serializer_class = LessonSerializer
 
     permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
+
+
+    def perform_update(self, serializer):
+        new_lesson = serializer.save()
+
+        zone = pytz.timezone(settings.TIME_ZONE)
+        current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
+
+        if new_lesson.course.updated_at < current_datetime_4_hours_ago:
+            print(f"last_upd {new_lesson.course.updated_at}, -4h {current_datetime_4_hours_ago}")
+
+            send_information_about_course_update.delay(new_lesson.course.pk)
+
+        course = Course.objects.get(course=new_lesson.course.pk)
+        course.save()
+
 
 
 class LessonDestroyAPIView(DestroyAPIView):
