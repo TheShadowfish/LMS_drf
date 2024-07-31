@@ -139,6 +139,7 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'UPDATE_LAST_LOGIN': True
 }
 
 
@@ -158,9 +159,10 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 
 CELERY_BEAT_SCHEDULE = {
-    "send_email_about_birthday": {
-        "task": "dogs.tasks.send_email_about_birthday",
-        "schedule": timedelta(days=1),  # Run every day at 00:00
+    "block_users_who_was_absent_last_mount": {
+        "task": "courses.tasks.block_users_who_was_absent_last_mount",
+        "schedule": timedelta(minutes=1),  # Run every day at 00:00
+        "kwargs": {"block_absent": True, "timedelta_days": 30}
     }
 }
 

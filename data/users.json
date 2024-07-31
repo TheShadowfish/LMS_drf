@@ -106,7 +106,7 @@
     "pk": 6,
     "fields": {
       "password": "pbkdf2_sha256$720000$qK4wyHUruHNRBIhyrH3dEe$4v2GzxzV5AP1dj0hGJEvICIlkGIt0+Rk89O4POXhoEY=",
-      "last_login": null,
+      "last_login": "2024-07-31T17:34:25.586Z",
       "is_superuser": false,
       "first_name": "",
       "last_name": "",
@@ -123,6 +123,20 @@
   },
   {
     "model": "users.payments",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "date_of_payment": "2024-04-24T00:00:00Z",
+      "course": 1,
+      "lesson": null,
+      "payment_amount": 12000,
+      "payment_method_is_cash": true,
+      "session_id": null,
+      "link": null
+    }
+  },
+  {
+    "model": "users.payments",
     "pk": 2,
     "fields": {
       "user": 1,
@@ -130,6 +144,20 @@
       "course": null,
       "lesson": 2,
       "payment_amount": 12000,
+      "payment_method_is_cash": true,
+      "session_id": null,
+      "link": null
+    }
+  },
+  {
+    "model": "users.payments",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "date_of_payment": "2023-05-24T00:00:00Z",
+      "course": null,
+      "lesson": 8,
+      "payment_amount": 4000,
       "payment_method_is_cash": true,
       "session_id": null,
       "link": null
@@ -158,6 +186,20 @@
       "course": 2,
       "lesson": null,
       "payment_amount": 11000,
+      "payment_method_is_cash": false,
+      "session_id": null,
+      "link": null
+    }
+  },
+  {
+    "model": "users.payments",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "date_of_payment": "2023-12-11T00:00:00Z",
+      "course": null,
+      "lesson": 7,
+      "payment_amount": 7000,
       "payment_method_is_cash": false,
       "session_id": null,
       "link": null
@@ -291,6 +333,24 @@
       "user": 6,
       "course": 2,
       "last_date": "2024-07-31T12:31:29.741Z"
+    }
+  },
+  {
+    "model": "users.subscriptions",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "course": 3,
+      "last_date": "2024-07-23T11:46:17.332Z"
+    }
+  },
+  {
+    "model": "users.subscriptions",
+    "pk": 4,
+    "fields": {
+      "user": 6,
+      "course": 8,
+      "last_date": "2024-07-31T16:33:07.489Z"
     }
   }
 ]

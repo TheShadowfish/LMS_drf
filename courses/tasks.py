@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 
 from celery import shared_task
 from django.core.mail import send_mail
@@ -18,7 +18,7 @@ def send_information_about_course_update(pk):
 
     message, email_list = get_email_list(pk)
 
-    print(f"<<<<<<<<<<<<<<<< {message}, {email_list} >>>>>>>>>>>>>>>")
+    # print(f"<<<<<<<<<<<<<<<< {message}, {email_list} >>>>>>>>>>>>>>>")
 
     # zone = pytz.timezone(settings.TIME_ZONE)
     # current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
@@ -42,4 +42,28 @@ def send_information_about_course_update(pk):
             email_list
         )
     else:
-        print("no emails sended today")
+        print("No emails were sended - no subsriptions")
+
+
+@shared_task
+def block_users_who_was_absent_last_mount(block_absent, timedelta_days):
+    # mount_ago = timezone.now().today().date() - timedelta(days=10)
+
+    zone = pytz.timezone(settings.TIME_ZONE)
+    mount_ago = datetime.now(zone) - timedelta(days=timedelta_days)
+
+    users_no_login = User.objects.filter(last_login__isnull=True, date_joined__lte=mount_ago)
+    users_login = User.objects.filter(last_login__isnull=False, last_login__lte=mount_ago)
+
+    print(f"Users no login: {users_no_login.count()}")
+    print(f"Users who was absent last month: {users_login.count()}")
+    print(f"Users no login: {users_no_login}")
+    print(f"Users who was absent last month: {users_login}")
+
+    if block_absent:
+        for users in users_no_login:
+            users.is_active = False
+            users.save()
+        for users in users_login:
+            users.is_active = False
+            users.save()
