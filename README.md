@@ -41,6 +41,55 @@ delete: http://localhost:8000/payments/<int:pk>/delete/
 2) python3 manage.py loaddata data/users.json
 
 celery -A config worker --beat --scheduler django --loglevel=info
+
+#config urls
+
+urlpatterns = [
+
+    path("admin/", admin.site.urls),
+    path("courses/", include("courses.urls", namespace="courses")),
+    path("", include("users.urls", namespace="users")),
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+]
+
+#users urls
+
+urlpatterns = [
+
+    path('register/', UserCreateAPIView.as_view(), name='register'),
+    path('login/', TokenObtainPairView.as_view(permission_classes=(AllowAny,)), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(permission_classes=(AllowAny,)), name='token_refresh'),
+    path("users/<int:pk>/retrieve_update/", UserRetrieveUpdateAPIView.as_view(), name="users_retrieve_update"),
+    path("users/<int:pk>/delete/", UserDeleteAPIView.as_view(), name="users_delete"),
+    path("users/", UserListAPIView.as_view(), name="users"),
+    # payments
+    path("payments/", PaymentsListAPIView.as_view(), name="payments"),
+    path("payments/<int:pk>/", PaymentsRetrieveAPIView.as_view(), name="payments_retrieve"),
+    path("payments/create/", PaymentsCreateAPIView.as_view(), name="payments_create"),
+    path("payments/<int:pk>/update/", PaymentsUpdateAPIView.as_view(), name="payments_update"),
+    path("payments/<int:pk>/delete/", PaymentsDestroyAPIView.as_view(), name="payments_delete"),
+    # subscriptions
+    path("subscriptions/create/", SubscriptionsCreateAPIView.as_view(), name="subscriptions-create"),
+    path("subscriptions/<int:pk>/delete/", SubscriptionsDestroyAPIView.as_view(), name="subscriptions-delete")
+
+]
+
+#courses urls
+
+urlpatterns = [
+
+    path("lessons/", LessonListAPIView.as_view(), name="lessons-list"),
+    path("lessons/<int:pk>/", LessonRetrieveAPIView.as_view(), name="lessons-retrieve"),
+    path("lessons/<int:pk>/update/", LessonUpdateAPIView.as_view(), name="lessons-update"),
+    path("lessons/create/", LessonCreateAPIView.as_view(), name="lessons-create"),
+    path("lessons/<int:pk>/delete/", LessonDestroyAPIView.as_view(), name="lessons-delete"),
+
+]
+urlpatterns += router.urls
+
 =========================================================
 
 # Задание 1 (+) вроде как всё

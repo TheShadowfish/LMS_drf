@@ -1,6 +1,7 @@
 from datetime import datetime, timedelta
 
 import pytz
+from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
 from rest_framework.permissions import IsAuthenticated
@@ -20,9 +21,9 @@ from courses.serializers import CourseSerializer, LessonSerializer, CourseCreate
 from courses.tasks import send_information_about_course_update
 from users.permissions import IsModerator, IsOwner
 
+
 @method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Вывод списка курсов"))
 @method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Создание курса"))
-
 @method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Удаление курса"))
 @method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Обновление курса"))
 @method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Обновление курса"))
@@ -30,7 +31,6 @@ from users.permissions import IsModerator, IsOwner
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     pagination_class = CustomPagination
-
 
     def perform_create(self, serializer):
         serializer.save(reg_user=self.request.user)
@@ -74,21 +74,17 @@ class LessonCreateAPIView(CreateAPIView):
     permission_classes = (~IsModerator, IsAuthenticated, IsOwner)
 
     def perform_create(self, serializer):
-        new_lesson = serializer.save(owner=self.request.user)
-        # new_lesson = serializer.save()
+        new_lesson = serializer.save()
 
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
 
+        course = get_object_or_404(Course, pk=new_lesson.course.pk)
+
         if new_lesson.course.updated_at < current_datetime_4_hours_ago:
-            print(f"last_upd {new_lesson.course.updated_at}, -4h {current_datetime_4_hours_ago}")
+            send_information_about_course_update.delay(course.pk)
 
-            send_information_about_course_update.delay(new_lesson.course.pk)
-
-        course = Course.objects.get(course=new_lesson.course.pk)
-        print(course)
         course.save()
-        # course = serializer.save()
 
 
 class LessonRetrieveAPIView(RetrieveAPIView):
@@ -106,21 +102,18 @@ class LessonUpdateAPIView(UpdateAPIView):
 
     permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
 
-
     def perform_update(self, serializer):
         new_lesson = serializer.save()
 
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
 
+        course = get_object_or_404(Course, pk=new_lesson.course.pk)
+
         if new_lesson.course.updated_at < current_datetime_4_hours_ago:
-            print(f"last_upd {new_lesson.course.updated_at}, -4h {current_datetime_4_hours_ago}")
+            send_information_about_course_update.delay(course.pk)
 
-            send_information_about_course_update.delay(new_lesson.course.pk)
-
-        course = Course.objects.get(course=new_lesson.course.pk)
         course.save()
-
 
 
 class LessonDestroyAPIView(DestroyAPIView):
@@ -139,4 +132,3 @@ class LessonDestroyAPIView(DestroyAPIView):
             self.permission_classes = (IsOwner, IsAuthenticated)
 
         return super().get_permissions()
-
