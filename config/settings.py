@@ -31,6 +31,7 @@ INSTALLED_APPS = [
     "django_filters",
     'rest_framework_simplejwt',
     'drf_yasg',
+    "django_celery_beat",
 ]
 
 MIDDLEWARE = [
@@ -138,7 +139,40 @@ REST_FRAMEWORK = {
 SIMPLE_JWT = {
     "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+    'UPDATE_LAST_LOGIN': True
 }
 
 
 STRIPE_API_KEY = os.getenv("STRIPE_API_KEY")
+
+
+# Celery Configuration Options
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+# set the celery broker url
+CELERY_BROKER_URL = os.getenv("CELERY_BROKER_URL")
+
+# set the celery result backend
+CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
+
+
+CELERY_BEAT_SCHEDULE = {
+    "block_users_who_was_absent_last_mount": {
+        "task": "courses.tasks.block_users_who_was_absent_last_mount",
+        "schedule": timedelta(minutes=1),  # Run every day at 00:00
+        "kwargs": {"block_absent": True, "timedelta_days": 30}
+    }
+}
+
+
+EMAIL_HOST = os.getenv("EMAIL_HOST")
+EMAIL_PORT = os.getenv("EMAIL_PORT")
+EMAIL_HOST_USER = os.getenv("EMAIL_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_PASSWORD")
+EMAIL_USE_TLS = os.getenv("EMAIL_USE_TLS") == "True"
+EMAIL_USE_SSL = os.getenv("EMAIL_USE_SSL") == "True"
+
+SERVER_EMAIL = EMAIL_HOST_USER
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

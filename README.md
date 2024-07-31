@@ -40,59 +40,82 @@ delete: http://localhost:8000/payments/<int:pk>/delete/
 1) python3 manage.py loaddata data/courses.json
 2) python3 manage.py loaddata data/users.json
 
+celery -A config worker --beat --scheduler django --loglevel=info
+
+#config urls
+
+urlpatterns = [
+
+    path("admin/", admin.site.urls),
+    path("courses/", include("courses.urls", namespace="courses")),
+    path("", include("users.urls", namespace="users")),
+    path('swagger<format>/', schema_view.without_ui(cache_timeout=0), name='schema-json'),
+    path('swagger/', schema_view.with_ui('swagger', cache_timeout=0), name='schema-swagger-ui'),
+    path('redoc/', schema_view.with_ui('redoc', cache_timeout=0), name='schema-redoc'),
+
+]
+
+#users urls
+
+urlpatterns = [
+
+    path('register/', UserCreateAPIView.as_view(), name='register'),
+    path('login/', TokenObtainPairView.as_view(permission_classes=(AllowAny,)), name='token_obtain_pair'),
+    path('token/refresh/', TokenRefreshView.as_view(permission_classes=(AllowAny,)), name='token_refresh'),
+    path("users/<int:pk>/retrieve_update/", UserRetrieveUpdateAPIView.as_view(), name="users_retrieve_update"),
+    path("users/<int:pk>/delete/", UserDeleteAPIView.as_view(), name="users_delete"),
+    path("users/", UserListAPIView.as_view(), name="users"),
+    # payments
+    path("payments/", PaymentsListAPIView.as_view(), name="payments"),
+    path("payments/<int:pk>/", PaymentsRetrieveAPIView.as_view(), name="payments_retrieve"),
+    path("payments/create/", PaymentsCreateAPIView.as_view(), name="payments_create"),
+    path("payments/<int:pk>/update/", PaymentsUpdateAPIView.as_view(), name="payments_update"),
+    path("payments/<int:pk>/delete/", PaymentsDestroyAPIView.as_view(), name="payments_delete"),
+    # subscriptions
+    path("subscriptions/create/", SubscriptionsCreateAPIView.as_view(), name="subscriptions-create"),
+    path("subscriptions/<int:pk>/delete/", SubscriptionsDestroyAPIView.as_view(), name="subscriptions-delete")
+
+]
+
+#courses urls
+
+urlpatterns = [
+
+    path("lessons/", LessonListAPIView.as_view(), name="lessons-list"),
+    path("lessons/<int:pk>/", LessonRetrieveAPIView.as_view(), name="lessons-retrieve"),
+    path("lessons/<int:pk>/update/", LessonUpdateAPIView.as_view(), name="lessons-update"),
+    path("lessons/create/", LessonCreateAPIView.as_view(), name="lessons-create"),
+    path("lessons/<int:pk>/delete/", LessonDestroyAPIView.as_view(), name="lessons-delete"),
+
+]
+urlpatterns += router.urls
+
 =========================================================
 
 # Задание 1 (+) вроде как всё
-Подключить и настроить вывод документации для проекта. Убедиться, что каждый из реализованных эндпоинтов описан в документации верно, при необходимости описать вручную.
+Настройте проект для работы с Celery. Также настройте приложение на работу с celery-beat для выполнения периодических задач.
 
-Для работы с документацией проекта воспользуйтесь библиотекой drf-yasg или drf-spectacular.
+Не забудьте вынести настройки Redis в переменные окружения.
 
-Как вручную можно сформировать документацию в drf-yasg можно почитать тут, в drf-spectacular — тут или тут.
-
-# Задание 2
-Подключить возможность оплаты курсов через https://stripe.com/docs/api.
-
-Доступы можно получить напрямую из документации, а также пройти простую регистрацию по адресу https://dashboard.stripe.com/register.
-
-Для работы с учебным проектом достаточно зарегистрировать аккаунт и не подтверждать его — аккаунт будет находиться в тестовом режиме.
-
-Для работы с запросами вам понадобится реализовать обращение к эндпоинтам:
-
-https://stripe.com/docs/api/products/create — создание продукта;
-
-https://stripe.com/docs/api/prices/create — создание цены;
-
-https://stripe.com/docs/api/checkout/sessions/create — создание сессии для получения ссылки на оплату.
-
-При создании цены и сессии обратите внимание на поля, которые вы передаете в запросе. Внимательно изучите значение каждого поля и проанализируйте ошибки при их возникновении, чтобы создать корректную запись.
-
-При создании сессии нужно передавать id цены, которая соответствует конкретному продукту.
-
-Для тестирования можно использовать номера карт из документации:
-
-https://stripe.com/docs/terminal/references/testing#standard-test-cards.
-
-**Примечание**
-
-Подключение оплаты лучше всего рассматривать как обычную задачу подключения к стороннему API.
-
-Основной путь: запрос на покупку → оплата. Статус проверять не нужно.
-
-Каждый эквайринг предоставляет тестовые карты для работы с виртуальными деньгами.
-
- 
+# Задание 2 (+) помучаться пришлось но не сильно долго
+Ранее вы реализовали функционал подписки на обновление курсов. Теперь добавьте асинхронную рассылку писем пользователям об обновлении материалов курса.
 
 **Подсказка**
+Чтобы реализовать асинхронную рассылку, вызывайте специальную задачу по отправке письма в коде контроллера. То есть вызов задачи на отправку сообщения должен происходить в контроллере обновления курса: когда курс обновлен — тем, кто подписан на обновления именно этого курса, отправляется письмо на почту.
 
-Необходимо связать данные от сервиса платежей со своим приложением. Все взаимодействия с платежным сервисом опишите в сервисных функциях. Сервисные функции взаимодействуют с платежным сервисом (Stripe) и отдают ответы в виде JSON. Далее результаты работы сервисных функций мы используем в соответствующих View: при создании платежа в нашей системе мы должны создать продукт, цену и сессию для платежа в Stripe, сохранить ссылку на оплату в созданном платеже в нашей системе и отдать пользователю в ответе на POST-запрос ссылку на оплату или данные о платеже (которые будут включать ссылку на оплату).
+# Дополнительное задание (+)
 
-При необходимости проверки статуса платежа можно реализовать дополнительную View, которая будет обращаться на Session Retrieve (https://stripe.com/docs/api/checkout/sessions/retrieve) по id созданной в Stripe сессии и отдавать пользователю данные о статусе платежа. Статус платежа также можно дополнительно хранить в модели платежей в нашей системе.
+Пользователь может обновлять каждый урок курса отдельно. Добавьте проверку на то, что уведомление отправляется только в том случае, если курс не обновлялся более четырех часов.
 
-Перед созданием сессии необходимо создать продукт и цену. Все эти данные мы можем получить из модели платежа (модель платежа связана с продуктом, в продукте есть название и цена).
+# Задание 3 (+)
+С помощью celery-beat реализуйте фоновую задачу, которая будет проверять пользователей по дате последнего входа по полю 
+last_login
+ и, если пользователь не заходил более месяца, блокировать его с помощью флага 
+is_active
+.
 
-Обратите внимание, что цены при передаче в Strip указываются в копейках (то есть текущую цену продукта нужно умножить на 100). 
+Задачу сделайте периодической и запланируйте расписание в настройках celery-beat.
 
-# Дополнительное задание
-Реализуйте проверку статуса с помощью эндпоинта https://stripe.com/docs/api/checkout/sessions/retrieve — получение данных о сессии по идентификатору.
+Обратите внимание на timezone вашего приложения и timezone в настройках celery: важно, чтобы они были одинаковыми, чтобы задачи запускались в корректное время.
 
 Дополнительное задание, помеченное звездочкой, желательно, но не обязательно выполнять.
