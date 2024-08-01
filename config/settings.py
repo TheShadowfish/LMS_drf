@@ -160,9 +160,8 @@ CELERY_RESULT_BACKEND = os.getenv("CELERY_RESULT_BACKEND")
 
 CELERY_BEAT_SCHEDULE = {
     "block_users_who_was_absent_last_mount": {
-        "task": "courses.tasks.block_users_who_was_absent_last_mount",
-        "schedule": timedelta(minutes=1),  # Run every day at 00:00
-        "kwargs": {"block_absent": True, "timedelta_days": 30}
+        "task": "users.tasks.block_users_who_was_absent_last_mount",
+        "schedule": timedelta(days=1),  # Run every day at 00:00
     }
 }
 

@@ -47,6 +47,35 @@ class CourseViewSet(ModelViewSet):
         course.owner = self.request.user
         course.save()
 
+        #Никто. Никто не сможет подписаться на курс в момент его создания.
+
+        # zone = pytz.timezone(settings.TIME_ZONE)
+        # current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
+        #
+        # course = get_object_or_404(Course, course.pk)
+        #
+        # if course.updated_at < current_datetime_4_hours_ago:
+        #     send_information_about_course_update.delay(course.pk)
+        #
+        #
+        # print(f"course.pk {course.pk}")
+        # send_information_about_course_update.delay(course.pk)
+
+
+    def perform_update(self, serializer):
+        course = serializer.save()
+        course.save()
+
+        zone = pytz.timezone(settings.TIME_ZONE)
+        current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
+
+
+        # course = get_object_or_404(Course, course.pk)
+
+        if course.updated_at < current_datetime_4_hours_ago:
+            send_information_about_course_update.delay(course.pk)
+
+
     def get_permissions(self):
 
         if self.request.user.groups.filter(name="Moderators").exists():
