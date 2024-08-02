@@ -1,13 +1,14 @@
 from rest_framework import serializers
-from rest_framework.fields import SerializerMethodField, CurrentUserDefault
+from rest_framework.fields import CurrentUserDefault, SerializerMethodField
 from rest_framework.serializers import ModelSerializer
+
 from courses.models import Course, Lesson
 from courses.validators import VideoUrlValidator
 from users.models import Subscriptions
 
 
 class LessonSerializer(ModelSerializer):
-    validators = [VideoUrlValidator(field='video_url')]
+    validators = [VideoUrlValidator(field="video_url")]
 
     # serializers.UniqueTogetherValidator(fields=['title', 'description'], queryset=Lesson.objects.all())
 
@@ -30,12 +31,16 @@ class LessonSerializer(ModelSerializer):
 
 
 class CourseSerializer(ModelSerializer):
-    count_lessons = SerializerMethodField(read_only=True, help_text="Число уроков в курсе")
-    lessons = LessonSerializer(many=True, read_only=True, help_text="Уроки, входящие в курс")
+    count_lessons = SerializerMethodField(
+        read_only=True, help_text="Число уроков в курсе"
+    )
+    lessons = LessonSerializer(
+        many=True, read_only=True, help_text="Уроки, входящие в курс"
+    )
 
-    subscriptions = SerializerMethodField(read_only=True, help_text="Подписка текущего пользователя на курс")
-
-
+    subscriptions = SerializerMethodField(
+        read_only=True, help_text="Подписка текущего пользователя на курс"
+    )
 
     def create(self, validated_data):
         lessons = validated_data.pop("lessons")
@@ -54,15 +59,13 @@ class CourseSerializer(ModelSerializer):
         return Lesson.objects.filter(course=obj).count()
 
     def get_subscriptions(self, obj):
-        user = self.context['request'].user
+        user = self.context["request"].user
         return Subscriptions.objects.all().filter(user=user).filter(course=obj).exists()
-
 
         # return [
         #     f"{s.course}-(pk={s.course.pk}{bool(s.last_date < s.course.updated_at) * ' Курс обновлен!'}),"
         #     for s in Subscriptions.objects.all().filter(course=obj).filter(user=user).order_by("last_date")
         # ]
-
 
     class Meta:
         model = Course
@@ -76,7 +79,7 @@ class CourseSerializer(ModelSerializer):
             "lessons",
             "created_at",
             "updated_at",
-            "subscriptions"
+            "subscriptions",
         )
 
 

@@ -1,9 +1,9 @@
-from rest_framework.reverse import reverse
 from django.urls import reverse
 from rest_framework import status
+from rest_framework.reverse import reverse
 from rest_framework.test import APITestCase
 
-from courses.models import Lesson, Course
+from courses.models import Course, Lesson
 from users.models import User
 
 #
@@ -23,14 +23,21 @@ class CoursesTestCase(APITestCase):
     def setUp(self):
         self.user = User.objects.create(email="admin@sky.pro")
 
-        self.course = Course.objects.create(title='Курс номер 1', description='Описание курса номер 1',  owner=self.user)
+        self.course = Course.objects.create(
+            title="Курс номер 1", description="Описание курса номер 1", owner=self.user
+        )
 
         video = "https://www.youtube.com/watch?v=uC0jJGfDxtM&list=PLlb7e2G7aSpTFea2FYxp7mFfbZW-xavhL&index=1"
 
-        self.lesson = Lesson.objects.create(title='Урок номер 1', course=self.course , description="описание" , video_url=video, owner=self.user)
+        self.lesson = Lesson.objects.create(
+            title="Урок номер 1",
+            course=self.course,
+            description="описание",
+            video_url=video,
+            owner=self.user,
+        )
 
         self.client.force_authenticate(user=self.user)
-
 
     def test_course_retrieve(self):
         url = reverse("courses:course-detail", args=(self.course.pk,))
@@ -39,7 +46,7 @@ class CoursesTestCase(APITestCase):
         data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('title'), self.course.title)
+        self.assertEqual(data.get("title"), self.course.title)
 
     def test_course_create(self):
         url = reverse("courses:course-list")
@@ -59,7 +66,7 @@ class CoursesTestCase(APITestCase):
         data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('title'), "Курс 1")
+        self.assertEqual(data.get("title"), "Курс 1")
 
     def test_course_delete(self):
         url = reverse("courses:course-detail", args=(self.course.pk,))
@@ -76,58 +83,65 @@ class CoursesTestCase(APITestCase):
         # print(data)
 
         created_text = str(self.course.created_at)
-        created = created_text[0:10]+'T'+created_text[11:26]+'Z'
+        created = created_text[0:10] + "T" + created_text[11:26] + "Z"
         updated_text = str(self.course.updated_at)
-        updated = updated_text[0:10] + 'T' + updated_text[11:26] + 'Z'
+        updated = updated_text[0:10] + "T" + updated_text[11:26] + "Z"
         # print(f"created {created}")
         # print(f"updated {updated}")
 
         result = {
-            'count': 1,
-            'next': None,
-            'previous': None,
-            'results':
-                [
-                    {
-                        'id': self.course.pk,
-                        'title': self.course.title,
-                        'preview': None,
-                        'description': self.course.description,
-                        'owner': self.user.pk,
-                        'count_lessons': 1,
-                        'lessons':
-                            [
-                                {
-                                    'id': self.lesson.pk,
-                                    'title': self.lesson.title,
-                                    'description': self.lesson.description,
-                                    'preview': None,
-                                    'video_url': self.lesson.video_url,
-                                    'course': self.course.pk,
-                                    'owner':  self.user.pk,
-                                }
-                            ],
-                        'created_at': created,
-                        'updated_at': updated,
-                        'subscriptions': False
-                    }
-                ]
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.course.pk,
+                    "title": self.course.title,
+                    "preview": None,
+                    "description": self.course.description,
+                    "owner": self.user.pk,
+                    "count_lessons": 1,
+                    "lessons": [
+                        {
+                            "id": self.lesson.pk,
+                            "title": self.lesson.title,
+                            "description": self.lesson.description,
+                            "preview": None,
+                            "video_url": self.lesson.video_url,
+                            "course": self.course.pk,
+                            "owner": self.user.pk,
+                        }
+                    ],
+                    "created_at": created,
+                    "updated_at": updated,
+                    "subscriptions": False,
+                }
+            ],
         }
         # print(f"created_at:{self.course.created_at} updated_at:{self.course.updated_at}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, result)
 
+
 class LessonsTestCase(APITestCase):
 
     def setUp(self):
         self.user = User.objects.create(email="admin@sky.pro")
 
-        self.course = Course.objects.create(title='Курс номер 1', description='Описание курса номер 1',  owner=self.user)
+        self.course = Course.objects.create(
+            title="Курс номер 1", description="Описание курса номер 1", owner=self.user
+        )
 
         video = "https://www.youtube.com/watch?v=uC0jJGfDxtM&list=PLlb7e2G7aSpTFea2FYxp7mFfbZW-xavhL&index=1"
 
-        self.lesson = Lesson.objects.create(title='Урок номер 1', course=self.course , description="описание" , video_url=video, owner=self.user)
+        self.lesson = Lesson.objects.create(
+            title="Урок номер 1",
+            course=self.course,
+            description="описание",
+            video_url=video,
+            owner=self.user,
+        )
 
         self.client.force_authenticate(user=self.user)
 
@@ -137,18 +151,14 @@ class LessonsTestCase(APITestCase):
         data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('title'), self.lesson.title)
+        self.assertEqual(data.get("title"), self.lesson.title)
 
     def test_lesson_create(self):
         url = reverse("courses:lessons-create")
         # course_id = self.course.pk
         # print(self.course.pk)
 
-        data = {
-            "title": "lesson 2",
-            "course": self.course.pk
-                }
-
+        data = {"title": "lesson 2", "course": self.course.pk}
 
         response = self.client.post(url, data)
 
@@ -165,7 +175,7 @@ class LessonsTestCase(APITestCase):
         data = response.json()
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(data.get('title'), "Updated lesson")
+        self.assertEqual(data.get("title"), "Updated lesson")
 
     def test_lesson_delete(self):
         url = reverse("courses:lessons-delete", args=(self.lesson.pk,))
@@ -181,25 +191,24 @@ class LessonsTestCase(APITestCase):
         data = response.json()
         # print(f"data {data}")
 
-
-        result = {'count': 1,
-             'next': None,
-             'previous': None,
-             'results':
-                 [
-                     {'id': self.lesson.pk,
-                      'title': self.lesson.title,
-                      'description': self.lesson.description,
-                      'preview': None,
-                      'video_url': self.lesson.video_url,
-                      'course': self.lesson.course.pk,
-                      'owner':  self.user.pk,
-                      }
-                 ]
-             }
+        result = {
+            "count": 1,
+            "next": None,
+            "previous": None,
+            "results": [
+                {
+                    "id": self.lesson.pk,
+                    "title": self.lesson.title,
+                    "description": self.lesson.description,
+                    "preview": None,
+                    "video_url": self.lesson.video_url,
+                    "course": self.lesson.course.pk,
+                    "owner": self.user.pk,
+                }
+            ],
+        }
 
         # print(f"result {result}")
 
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(data, result)
-

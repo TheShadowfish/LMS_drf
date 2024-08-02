@@ -1,5 +1,7 @@
-from rest_framework.exceptions import ValidationError
 import re
+
+from rest_framework.exceptions import ValidationError
+
 # forbidden_words = ['ставки', 'крипта', 'продам', 'гараж', 'знакомства', 'порно', 'казино']
 #
 #
@@ -14,7 +16,7 @@ class VideoUrlValidator:
 
     def __call__(self, value):
         # reg = re.compile('^[a-zA-Z0-9\.\-\ ]+$')
-        reg = re.compile('\Byoutube.com\B')
+        reg = re.compile("\Byoutube.com\B")
 
         tmp_val = dict(value).get(self.field)
         if tmp_val is None:
@@ -22,7 +24,7 @@ class VideoUrlValidator:
 
         # print(f"tmp_val {tmp_val} !!!")
 
-        first_match = re.search('youtube.com', tmp_val)
+        first_match = re.search("youtube.com", tmp_val)
 
         if not bool(first_match):
             raise ValidationError("Video_url must be only link to 'youtube'")

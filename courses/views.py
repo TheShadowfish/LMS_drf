@@ -4,30 +4,44 @@ import pytz
 from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from drf_yasg.utils import swagger_auto_schema
+from rest_framework.generics import (CreateAPIView, DestroyAPIView,
+                                     ListAPIView, RetrieveAPIView,
+                                     UpdateAPIView)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.viewsets import ModelViewSet
-from rest_framework.generics import (
-    ListAPIView,
-    CreateAPIView,
-    RetrieveAPIView,
-    UpdateAPIView,
-    DestroyAPIView,
-)
 
 from config import settings
 from courses.models import Course, Lesson
-from courses.paginators import CustomPagination, CustomOffsetPagination
-from courses.serializers import CourseSerializer, LessonSerializer, CourseCreateSerializer
+from courses.paginators import CustomOffsetPagination, CustomPagination
+from courses.serializers import (CourseCreateSerializer, CourseSerializer,
+                                 LessonSerializer)
 from courses.tasks import send_information_about_course_update
 from users.permissions import IsModerator, IsOwner
 
 
-@method_decorator(name='list', decorator=swagger_auto_schema(operation_description="Вывод списка курсов"))
-@method_decorator(name='create', decorator=swagger_auto_schema(operation_description="Создание курса"))
-@method_decorator(name='destroy', decorator=swagger_auto_schema(operation_description="Удаление курса"))
-@method_decorator(name='update', decorator=swagger_auto_schema(operation_description="Обновление курса"))
-@method_decorator(name='partial_update', decorator=swagger_auto_schema(operation_description="Обновление курса"))
-@method_decorator(name='retrieve', decorator=swagger_auto_schema(operation_description="Просмотр информации о курсе"))
+@method_decorator(
+    name="list",
+    decorator=swagger_auto_schema(operation_description="Вывод списка курсов"),
+)
+@method_decorator(
+    name="create", decorator=swagger_auto_schema(operation_description="Создание курса")
+)
+@method_decorator(
+    name="destroy",
+    decorator=swagger_auto_schema(operation_description="Удаление курса"),
+)
+@method_decorator(
+    name="update",
+    decorator=swagger_auto_schema(operation_description="Обновление курса"),
+)
+@method_decorator(
+    name="partial_update",
+    decorator=swagger_auto_schema(operation_description="Обновление курса"),
+)
+@method_decorator(
+    name="retrieve",
+    decorator=swagger_auto_schema(operation_description="Просмотр информации о курсе"),
+)
 class CourseViewSet(ModelViewSet):
     queryset = Course.objects.all()
     pagination_class = CustomPagination
@@ -47,7 +61,7 @@ class CourseViewSet(ModelViewSet):
         course.owner = self.request.user
         course.save()
 
-        #Никто. Никто не сможет подписаться на курс в момент его создания.
+        # Никто. Никто не сможет подписаться на курс в момент его создания.
 
         # zone = pytz.timezone(settings.TIME_ZONE)
         # current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
@@ -61,7 +75,6 @@ class CourseViewSet(ModelViewSet):
         # print(f"course.pk {course.pk}")
         # send_information_about_course_update.delay(course.pk)
 
-
     def perform_update(self, serializer):
         course = serializer.save()
         course.save()
@@ -69,12 +82,10 @@ class CourseViewSet(ModelViewSet):
         zone = pytz.timezone(settings.TIME_ZONE)
         current_datetime_4_hours_ago = datetime.now(zone) - timedelta(hours=4)
 
-
         # course = get_object_or_404(Course, course.pk)
 
         if course.updated_at < current_datetime_4_hours_ago:
             send_information_about_course_update.delay(course.pk)
-
 
     def get_permissions(self):
 
@@ -91,6 +102,7 @@ class CourseViewSet(ModelViewSet):
 
 class LessonListAPIView(ListAPIView):
     """Вывод списка уроков"""
+
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     pagination_class = CustomOffsetPagination
@@ -98,6 +110,7 @@ class LessonListAPIView(ListAPIView):
 
 class LessonCreateAPIView(CreateAPIView):
     """Создание урока"""
+
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
     permission_classes = (~IsModerator, IsAuthenticated, IsOwner)
@@ -118,18 +131,26 @@ class LessonCreateAPIView(CreateAPIView):
 
 class LessonRetrieveAPIView(RetrieveAPIView):
     """Получение информации об отдельном уроке"""
+
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
+    permission_classes = (
+        IsAuthenticated,
+        IsModerator | IsOwner,
+    )
 
 
 class LessonUpdateAPIView(UpdateAPIView):
     """Обновление информации об отдельном уроке"""
+
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 
-    permission_classes = (IsAuthenticated, IsModerator | IsOwner,)
+    permission_classes = (
+        IsAuthenticated,
+        IsModerator | IsOwner,
+    )
 
     def perform_update(self, serializer):
         new_lesson = serializer.save()
@@ -147,6 +168,7 @@ class LessonUpdateAPIView(UpdateAPIView):
 
 class LessonDestroyAPIView(DestroyAPIView):
     """Удаление урока"""
+
     queryset = Lesson.objects.all()
     serializer_class = LessonSerializer
 

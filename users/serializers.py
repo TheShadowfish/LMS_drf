@@ -2,13 +2,16 @@ from rest_framework.exceptions import ValidationError
 from rest_framework.fields import SerializerMethodField
 from rest_framework.serializers import ModelSerializer
 
-from courses.models import Course
-from users.models import User, Payments, Subscriptions
+from users.models import Payments, Subscriptions, User
 
 
 class UserSerializer(ModelSerializer):
-    payments = SerializerMethodField(read_only=True, help_text="Оплаченные уроки и курсы")
-    subscriptions = SerializerMethodField(read_only=True, help_text="Подписки на обновления")
+    payments = SerializerMethodField(
+        read_only=True, help_text="Оплаченные уроки и курсы"
+    )
+    subscriptions = SerializerMethodField(
+        read_only=True, help_text="Подписки на обновления"
+    )
 
     def get_payments(self, obj):
         return [
@@ -21,8 +24,6 @@ class UserSerializer(ModelSerializer):
             f"{s.course}-(pk={s.course.pk}{bool(s.last_date < s.course.updated_at)*' Курс обновлен!'}),"
             for s in Subscriptions.objects.filter(user=obj).order_by("last_date")
         ]
-
-
 
     class Meta:
         model = User
@@ -46,8 +47,8 @@ class PaymentsSerializer(ModelSerializer):
                 "You can choose 'course' or 'lesson', but not both at the same time"
             )
         elif (
-                validated_data.get("course") is None
-                and validated_data.get("lesson") is None
+            validated_data.get("course") is None
+            and validated_data.get("lesson") is None
         ):
             raise ValidationError("You must choose 'course' or 'lesson'")
 
@@ -60,8 +61,8 @@ class PaymentsSerializer(ModelSerializer):
                 "You can choose 'course' or 'lesson', but not both at the same time"
             )
         elif (
-                validated_data.get("course") is None
-                and validated_data.get("lesson") is None
+            validated_data.get("course") is None
+            and validated_data.get("lesson") is None
         ):
             raise ValidationError("You must choose 'course' or 'lesson'")
 

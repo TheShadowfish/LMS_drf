@@ -15,7 +15,7 @@ class Course(models.Model):
         upload_to="course/preview",
         verbose_name="Превью",
         help_text="Загрузите превью курса (картинка)",
-        **NULLABLE
+        **NULLABLE,
     )
     description = models.TextField(
         verbose_name="Описание курса", help_text="Введите описание курса", **NULLABLE
@@ -26,7 +26,7 @@ class Course(models.Model):
         on_delete=models.SET_NULL,
         **NULLABLE,
         verbose_name="Владелец",
-        help_text="Укажите владельца курса"
+        help_text="Укажите владельца курса",
     )
 
     created_at = models.DateTimeField(
@@ -41,8 +41,6 @@ class Course(models.Model):
         help_text="Укажите дату изменения",
         auto_now=True,
     )
-
-
 
     class Meta:
         verbose_name = "Курс"
@@ -74,7 +72,7 @@ class Lesson(models.Model):
         verbose_name="Курс",
         help_text="Введите курс",
         related_name="lessons",
-        **NULLABLE
+        **NULLABLE,
     )
     description = models.TextField(
         verbose_name="Описание урока", help_text="Введите описание урока", **NULLABLE
@@ -83,13 +81,13 @@ class Lesson(models.Model):
         upload_to="lesson/preview",
         verbose_name="Превью",
         help_text="Загрузите превью урока (картинка)",
-        **NULLABLE
+        **NULLABLE,
     )
     video_url = models.CharField(
         **NULLABLE,
         max_length=300,
         verbose_name="Ссылка на видео урока",
-        help_text="Укажите ссылку на видео урока"
+        help_text="Укажите ссылку на видео урока",
     )
 
     owner = models.ForeignKey(
@@ -97,7 +95,7 @@ class Lesson(models.Model):
         on_delete=models.SET_NULL,
         **NULLABLE,
         verbose_name="Владелец",
-        help_text="Укажите владельца урока"
+        help_text="Укажите владельца урока",
     )
 
     class Meta:
